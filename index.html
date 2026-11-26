@@ -2401,7 +2401,7 @@
     let autoResumeTimer = null;
     let tfCooldownTimer = null;
     let autoResumeSeconds = 6;
-    let videoDuration = 1264;
+    let videoDuration = 1255;
     let currentDragSelectedIndices = [];
     let currentTFGroupAnswers = {};
     let currentMultiSelected = [];
@@ -2911,7 +2911,7 @@
       if (isQuizCurrentlyOpen()) return;
       const rect = e.currentTarget.getBoundingClientRect();
       const clickX = Math.min(rect.width, Math.max(0, e.clientX - rect.left));
-      const targetTime = (clickX / rect.width) * (videoDuration || PlayerEngine.getDuration() || 1264);
+      const targetTime = (clickX / rect.width) * (videoDuration || PlayerEngine.getDuration() || 1255);
 
       if (isTeacherMode || targetTime <= maxWatchedTime) {
         if (isTeacherMode) {
@@ -2937,7 +2937,7 @@
         if (!teacherScrubbing || !isTeacherMode || isQuizCurrentlyOpen()) return;
         const rect = tl.getBoundingClientRect();
         const x = Math.min(rect.width, Math.max(0, e.clientX - rect.left));
-        const t = (x / rect.width) * (videoDuration || 1264);
+        const t = (x / rect.width) * (videoDuration || 1255);
         maxWatchedTime = Math.max(maxWatchedTime, t);
         PlayerEngine.seekTo(t);
         updateTimelineUI(t);
@@ -2947,7 +2947,7 @@
 
     function teacherForward15s() {
       if (!isTeacherMode || isQuizCurrentlyOpen()) return;
-      const dur = PlayerEngine.getDuration() || videoDuration || 1264;
+      const dur = PlayerEngine.getDuration() || videoDuration || 1255;
       const next = Math.min(dur - 1, PlayerEngine.getTime() + 15);
       maxWatchedTime = Math.max(maxWatchedTime, next);
       PlayerEngine.seekTo(next);

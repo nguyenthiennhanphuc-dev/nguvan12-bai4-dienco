@@ -4,7 +4,7 @@
 - **Giáo viên:** Phạm Thị Phú – Trường THPT Khúc Thừa Dụ
 - **Lớp học:** 12C
 - **Tính năng:**
-  - Video bài giảng HD `21:04` (âm thanh chuẩn hóa `-16 LUFS` to rõ, tối ưu `faststart`)
+  - Video bài giảng HD `20:55` (âm thanh chuẩn hóa `-16 LUFS` to rõ, tối ưu `faststart`)
   - 10 trạm câu hỏi tương tác đa dạng chuẩn GDPT 2018 (Trắc nghiệm, Đúng/Sai đơn, Đúng/Sai 4 mệnh đề, Chọn nhiều đáp án, Điền khuyết, Nối cặp A–B, Ghép thẻ, Phân loại nhóm)
   - Khung phát video lớn, hỗ trợ phóng to toàn màn hình 1-chạm
   - Khóa chống tua nhanh (Anti-Skip) & cơ chế vượt trạm Mastery Gate
