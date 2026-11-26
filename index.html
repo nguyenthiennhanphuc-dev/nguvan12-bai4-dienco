@@ -47,16 +47,16 @@
     header {
       background: linear-gradient(135deg, #1e3a8a, #0f172a);
       border-bottom: 2px solid #334155;
-      padding: 10px 20px;
+      padding: 7px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
 
     .header-title h1 {
-      font-size: 1.2rem;
+      font-size: 1.06rem;
       color: #fbbf24;
       display: flex;
       align-items: center;
@@ -64,7 +64,7 @@
     }
 
     .header-title p {
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
     }
 
@@ -118,8 +118,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 12px;
-      max-width: 1100px;
+      padding: 6px 14px 12px;
+      max-width: 1520px;
       margin: 0 auto;
       width: 100%;
     }
@@ -1740,9 +1740,36 @@
     #localVideo, #ytContainer {
       width: 100%;
       aspect-ratio: 16 / 9;
-      max-height: 70vh;
+      max-height: calc(100vh - 135px);
+      max-height: calc(100dvh - 135px);
       height: auto !important;
       background: #000;
+    }
+    .player-container:fullscreen #localVideo,
+    .player-container:fullscreen #ytContainer,
+    .player-container:-webkit-full-screen #localVideo,
+    .player-container:-webkit-full-screen #ytContainer {
+      max-height: calc(100vh - 52px) !important;
+      height: calc(100vh - 52px) !important;
+      width: 100% !important;
+    }
+    .btn-fullscreen-pill {
+      width: auto !important;
+      border-radius: 8px !important;
+      padding: 0 11px !important;
+      font-size: 0.84rem !important;
+      font-weight: 700 !important;
+      background: rgba(59, 130, 246, 0.25) !important;
+      border: 1px solid rgba(96, 165, 250, 0.45) !important;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .btn-fullscreen-pill:hover {
+      background: rgba(59, 130, 246, 0.45) !important;
+    }
+    @media (max-width: 600px) {
+      .btn-fullscreen-pill .fs-label { display: none; }
+      .btn-fullscreen-pill { width: 36px !important; padding: 0 !important; border-radius: 50% !important; }
     }
     .controls-bar {
       position: relative !important;
@@ -1899,8 +1926,8 @@
           🔊
         </button>
 
-        <button class="btn-ctrl" onclick="toggleFullscreen()" title="Toàn màn hình">
-          ⛶
+        <button class="btn-ctrl btn-fullscreen-pill" id="fullscreenBtn" onclick="toggleFullscreen()" title="Phóng to toàn màn hình">
+          <span>⛶</span><span class="fs-label">Toàn màn hình</span>
         </button>
       </div>
 
@@ -1964,9 +1991,9 @@
             <div class="score-number" id="finalScoreText">10/10</div>
             <div class="score-total" id="finalScorePct">Điểm số</div>
           </div>
-          <h2 id="completionTitle" style="color:#10b981; font-size:1.35rem; margin-bottom:6px;">🎉 CHÚC MỪNG EM ĐÃ HOÀN THÀNH BÀI HỌC!</h2>
+          <h2 id="completionTitle" style="color:#10b981; font-size:1.35rem; margin-bottom:6px;">🎉 CHÚC MỪNG EM ĐÃ HOÀN THÀNH NHIỆM VỤ!</h2>
           <p style="color:#cbd5e1; font-size:0.92rem; margin-bottom:16px;">
-            Học sinh: <strong id="summaryStudentName" style="color:#fbbf24;">Nguyễn Văn A</strong> - Lớp: <strong id="summaryStudentClass" style="color:#fbbf24;">12A1</strong>
+            Học sinh: <strong id="summaryStudentName" style="color:#fbbf24;">Nguyễn Văn A</strong> - Lớp: <strong id="summaryStudentClass" style="color:#fbbf24;">12C</strong>
           </p>
 
           <div id="summaryDetails" style="background:#0f172a; padding:12px; border-radius:10px; font-size:0.88rem; text-align:left; line-height:1.6; margin-bottom:14px;">
@@ -2006,7 +2033,8 @@
       <h2>👋 CHÀO MỪNG EM ĐẾN VỚI BÀI HỌC!</h2>
       <p>
         <strong id="registerLessonTitle">Ngữ văn 12 - Bài 4 – Thực hành tiếng Việt: Nghệ thuật sử dụng điển cố trong tác phẩm văn học</strong><br>
-        Video có tích hợp các câu hỏi tương tác chống tua nhanh. Hãy điền thông tin để lưu kết quả vào sổ điểm của Thầy Cô nhé!
+        <span style="color:#fbbf24; font-weight:700;">Giáo viên Phạm Thị Phú - Trường THPT Khúc Thừa Dụ • Lớp 12C</span><br>
+        Video có tích hợp các câu hỏi tương tác chống tua nhanh. Hãy điền họ tên để lưu kết quả vào sổ điểm của Thầy Cô nhé!
       </p>
 
       <form onsubmit="handleRegistration(event)">
@@ -2016,8 +2044,8 @@
         </div>
 
         <div class="form-group">
-          <label for="regClass">Lớp học (*):</label>
-          <input type="text" id="regClass" placeholder="Ví dụ: 12A1, 12A2, 12A3..." required>
+          <label for="regClass">Lớp học (Cố định theo lớp giảng dạy):</label>
+          <input type="text" id="regClass" value="12C" readonly style="background:rgba(15,23,42,0.85); color:#fbbf24; font-weight:700; border-color:#3b82f6; cursor:default;" required>
         </div>
 
         <button type="submit" class="btn-start">
@@ -2104,6 +2132,7 @@
     const LESSON_TITLE = 'Bài 4 – Thực hành tiếng Việt: Nghệ thuật sử dụng điển cố trong tác phẩm văn học (Ngữ văn 12)';
     const PASSING_THRESHOLD_PCT = 80; // Học sinh phải đạt ít nhất 80% số câu hỏi mới tính hoàn thành
     const LOCAL_VIDEO_PATH = './Bai4_DienCo_NguVan12_GV_PhamThiPhu.mp4';
+    const FIXED_CLASS = '12C';
 
     // Safe Storage Wrapper (chống crash trên Safari ẩn danh / Zalo WebView)
     function safeStorageGet(key) {
@@ -2122,7 +2151,7 @@
 
     let studentData = {
       name: safeStorageGet('nls_student_name') || safeStorageGet('nls_toan6_name') || '',
-      class: safeStorageGet('nls_student_class') || safeStorageGet('nls_toan6_class') || '',
+      class: FIXED_CLASS,
       startTime: new Date().toISOString(),
       score: 0,
       attempts: {},
@@ -2168,17 +2197,17 @@
       },
       {
             "id": 3,
-            "time": 516,
+            "time": 461,
             "type": "mcq",
-            "question": "Trong bài biểu 'Kê minh thập sách' (Đền thiêng cửa bể), điển cố 'Dời củi khỏi bếp tranh – Dùng dâu ràng cửa tổ' có nguồn gốc từ đâu và biểu đạt hàm ý gì?",
+            "question": "Trước khi phân tích từng điển cố cụ thể trong Bài tập 1 (bài biểu 'Kê minh thập sách'), bài giảng và phần Gợi ý SGK đã hướng dẫn cách thực hiện và yêu cầu trọng tâm nào sau đây?",
             "options": [
-                  "A. Dẫn từ Hán thư (Trung Quốc), ý nói cần phòng ngừa từ trước để tránh những hậu hoạ về sau",
-                  "B. Dẫn từ Kinh thi (Trung Quốc), thuật lời phi tần khuyên vua dậy sớm chăm lo việc nước",
-                  "C. Dẫn từ Tây du kí (Trung Quốc), gợi tả khung cảnh núi non hoang vu, hiểm trở",
-                  "D. Dẫn từ Liệt nữ truyện (Trung Quốc), ca ngợi tấm lòng giữ trọn chữ tín của bậc hiền phụ"
+                  "A. Theo dõi hệ thống cước chú ở trang 95 (nhận diện điển cố dưới hình thức nhân danh, địa danh), xác định tiêu biểu từ 3 điển cố trở lên và nêu được hiệu quả của chúng",
+                  "B. Bắt buộc dịch toàn bộ 10 điều tâu từ nguyên văn chữ Hán sang thơ lục bát tiếng Việt mà không cần xem cước chú trang 95",
+                  "C. Chỉ tìm kiếm các từ láy miêu tả cảnh thiên nhiên hoang vu mà bỏ qua tên nhân vật hay địa danh lịch sử",
+                  "D. Lược bỏ hoàn toàn các câu văn biền ngẫu cổ để viết lại thành lời đối thoại tự do theo văn phong hiện đại"
             ],
             "correct": 0,
-            "explanation": "Chính xác! Điển cố 'Dời củi khỏi bếp tranh – Dùng dâu ràng cửa tổ' dẫn từ Hán thư (Trung Quốc), mang hàm ý lo phòng ngừa từ trước (phòng cháy trước khi chưa cháy, ngừa mưa trước lúc chưa mưa) để tránh hậu hoạ cho đất nước."
+            "explanation": "Chính xác! Bài giảng hướng dẫn các em bám sát cước chú ở SGK trang 95 để nhận diện điển cố (dưới hình thức nhân danh, địa danh), không cần liệt kê hết toàn bộ mà chỉ cần chỉ ra tiêu biểu từ 3 điển cố trở lên cùng hiệu quả nghệ thuật của chúng."
       },
       {
             "id": 4,
@@ -2372,7 +2401,7 @@
     let autoResumeTimer = null;
     let tfCooldownTimer = null;
     let autoResumeSeconds = 6;
-    let videoDuration = 1304;
+    let videoDuration = 1264;
     let currentDragSelectedIndices = [];
     let currentTFGroupAnswers = {};
     let currentMultiSelected = [];
@@ -2415,8 +2444,8 @@
         document.getElementById('localVideo').style.display = 'block';
         document.getElementById('ytContainer').style.display = 'none';
         document.getElementById('sourceBadge').innerHTML = this.isLocal
-          ? '📁 Nguồn: Video máy tính (1080p)'
-          : '🎬 Nguồn: Video Bài Giảng HD (1080p)';
+          ? '📁 Nguồn: Video máy tính (720p HD)'
+          : '🎬 Nguồn: Video Bài Giảng HD (720p)';
 
         this.localEl.src = LOCAL_VIDEO_PATH;
         this.localEl.onloadedmetadata = () => {
@@ -2786,7 +2815,7 @@
       if (!pendingResumeState) return;
       const totalQ = checkpoints.length;
       studentData.name = pendingResumeState.name;
-      studentData.class = pendingResumeState.class;
+      studentData.class = FIXED_CLASS;
       studentData.attempts = pendingResumeState.attempts || {};
       studentData.questionStats = pendingResumeState.questionStats || {};
       recalculateScore();
@@ -2882,7 +2911,7 @@
       if (isQuizCurrentlyOpen()) return;
       const rect = e.currentTarget.getBoundingClientRect();
       const clickX = Math.min(rect.width, Math.max(0, e.clientX - rect.left));
-      const targetTime = (clickX / rect.width) * (videoDuration || PlayerEngine.getDuration() || 1304);
+      const targetTime = (clickX / rect.width) * (videoDuration || PlayerEngine.getDuration() || 1264);
 
       if (isTeacherMode || targetTime <= maxWatchedTime) {
         if (isTeacherMode) {
@@ -2908,7 +2937,7 @@
         if (!teacherScrubbing || !isTeacherMode || isQuizCurrentlyOpen()) return;
         const rect = tl.getBoundingClientRect();
         const x = Math.min(rect.width, Math.max(0, e.clientX - rect.left));
-        const t = (x / rect.width) * (videoDuration || 1304);
+        const t = (x / rect.width) * (videoDuration || 1264);
         maxWatchedTime = Math.max(maxWatchedTime, t);
         PlayerEngine.seekTo(t);
         updateTimelineUI(t);
@@ -2918,7 +2947,7 @@
 
     function teacherForward15s() {
       if (!isTeacherMode || isQuizCurrentlyOpen()) return;
-      const dur = PlayerEngine.getDuration() || videoDuration || 1304;
+      const dur = PlayerEngine.getDuration() || videoDuration || 1264;
       const next = Math.min(dur - 1, PlayerEngine.getTime() + 15);
       maxWatchedTime = Math.max(maxWatchedTime, next);
       PlayerEngine.seekTo(next);
@@ -4798,7 +4827,7 @@
       const modal = document.getElementById('changeStudentModal');
       if (!modal) return;
       document.getElementById('editStudentName').value = studentData.name || '';
-      document.getElementById('editStudentClass').value = studentData.class || '';
+      document.getElementById('editStudentClass').value = FIXED_CLASS;
       modal.style.display = 'flex';
       setTimeout(() => {
         const inp = document.getElementById('editStudentName');
@@ -4812,12 +4841,13 @@
     }
 
     function persistStudentIdentity(name, cls) {
+      const finalCls = FIXED_CLASS;
       studentData.name = name;
-      studentData.class = cls;
+      studentData.class = finalCls;
       safeStorageSet('nls_student_name', name);
-      safeStorageSet('nls_student_class', cls);
+      safeStorageSet('nls_student_class', finalCls);
       safeStorageSet('nls_toan6_name', name);
-      safeStorageSet('nls_toan6_class', cls);
+      safeStorageSet('nls_toan6_class', finalCls);
     }
 
     function handleUpdateStudentInfo(e) {
@@ -4965,7 +4995,7 @@
         } catch (e) {}
         AudioFX.playSuccess();
         titleEl.style.color = '#10b981';
-        titleEl.innerHTML = '🎉 CHÚC MỪNG EM ĐÃ HOÀN THÀNH BÀI HỌC!';
+        titleEl.innerHTML = '🎉 CHÚC MỪNG EM ĐÃ HOÀN THÀNH NHIỆM VỤ!';
         if (scoreCircle) scoreCircle.style.borderColor = '#10b981';
 
         const firstTryCount = checkpoints.filter(cp => {
@@ -5177,8 +5207,8 @@
         </div>
 
         <div class="form-group">
-          <label for="editStudentClass">Lớp học (*):</label>
-          <input type="text" id="editStudentClass" required placeholder="Ví dụ: 12A1, 12A2, 12A3..." style="font-size:16px;">
+          <label for="editStudentClass">Lớp học (Cố định theo lớp giảng dạy):</label>
+          <input type="text" id="editStudentClass" value="12C" readonly required style="font-size:16px; background:rgba(15,23,42,0.85); color:#fbbf24; font-weight:700; border-color:#3b82f6; cursor:default;">
         </div>
 
         <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px;">
