@@ -322,24 +322,28 @@
        INSTANT 1-CLICK QUIZ MODAL WITH EXPLICIT SIGNALS
        ======================================================== */
     .quiz-overlay {
-      position: absolute;
+      position: fixed;
+      inset: 0;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(15, 23, 42, 0.96);
-      backdrop-filter: blur(8px);
-      z-index: 40;
-      display: flex;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      background: rgba(15, 23, 42, 0.95);
+      z-index: 2147483647;
+      display: none;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       padding: 12px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease;
+      transition: opacity 0.14s ease;
     }
     .quiz-overlay.active {
+      display: flex;
       opacity: 1;
       pointer-events: auto;
     }
@@ -1630,18 +1634,19 @@
         display: none; /* Hide cloud status on mobile to save precious screen width */
       }
 
-      /* CRUCIAL FIX FOR MOBILE: Quiz Overlay takes over dynamic viewport so Continue button is never hidden behind browser bar */
+      /* CRUCIAL FIX FOR MOBILE: Quiz Overlay takes over dynamic viewport cleanly without blurry HW video stalls */
       .quiz-overlay {
         position: fixed !important;
+        inset: 0 !important;
         top: 0 !important;
         left: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
         height: 100dvh !important;
-        z-index: 9999 !important;
+        z-index: 2147483647 !important;
         padding: 8px !important;
-        backdrop-filter: blur(12px) !important;
-        background: rgba(15, 23, 42, 0.98) !important;
+        backdrop-filter: none !important;
+        background: rgba(15, 23, 42, 0.96) !important;
       }
       .quiz-box {
         max-width: 100% !important;
@@ -1748,10 +1753,26 @@
     .player-container:fullscreen #localVideo,
     .player-container:fullscreen #ytContainer,
     .player-container:-webkit-full-screen #localVideo,
-    .player-container:-webkit-full-screen #ytContainer {
+    .player-container:-webkit-full-screen #ytContainer,
+    .player-container.pseudo-fullscreen #localVideo,
+    .player-container.pseudo-fullscreen #ytContainer {
       max-height: calc(100vh - 52px) !important;
+      max-height: calc(100dvh - 52px) !important;
       height: calc(100vh - 52px) !important;
+      height: calc(100dvh - 52px) !important;
       width: 100% !important;
+    }
+    .player-container.pseudo-fullscreen {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      height: 100dvh !important;
+      max-width: none !important;
+      max-height: none !important;
+      z-index: 99990 !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
     }
     .btn-fullscreen-pill {
       width: auto !important;
@@ -1869,7 +1890,7 @@
         🔒 Chống tua nhanh: BẬT
       </div>
       <div class="stat-badge score-badge" id="scoreBadge">
-        ⭐ Điểm: 0/10
+        ⭐ Điểm: 0/9
       </div>
       <div class="stat-badge cloud-status" id="cloudBadge" title="Hệ thống tự động lưu kết quả theo thời gian thực">
         ☁️ Sổ điểm: Đã kết nối
@@ -1894,7 +1915,7 @@
       </div>
 
       <!-- Video Engines (Local MP4 and YouTube Iframe) -->
-      <video id="localVideo" preload="metadata" playsinline></video>
+      <video id="localVideo" preload="auto" playsinline webkit-playsinline="true" x5-playsinline="true" x5-video-player-type="h5" disablePictureInPicture controlsList="nodownload nofullscreen noremoteplayback"></video>
       <div id="ytContainer"><div id="ytplayer"></div></div>
 
       <!-- Transparent shield to block native controls / scrubbing -->
@@ -1935,7 +1956,7 @@
       <div class="quiz-overlay" id="quizOverlay">
         <div class="quiz-box">
           <div class="quiz-header">
-            <span class="quiz-badge" id="quizBadge">CÂU HỎI TƯƠNG TÁC 1/10</span>
+            <span class="quiz-badge" id="quizBadge">CÂU HỎI TƯƠNG TÁC 1/9</span>
             <span style="font-size:0.85rem; color:#94a3b8;" id="quizTime">⏱️ Điểm dừng: 03:10</span>
           </div>
 
@@ -1988,7 +2009,7 @@
       <div class="completion-screen" id="completionScreen">
         <div class="completion-card">
           <div class="score-circle" id="completionScoreCircle">
-            <div class="score-number" id="finalScoreText">10/10</div>
+            <div class="score-number" id="finalScoreText">9/9</div>
             <div class="score-total" id="finalScorePct">Điểm số</div>
           </div>
           <h2 id="completionTitle" style="color:#10b981; font-size:1.35rem; margin-bottom:6px;">🎉 CHÚC MỪNG EM ĐÃ HOÀN THÀNH NHIỆM VỤ!</h2>
@@ -2146,7 +2167,7 @@
     }
 
     // Per-video progress key để khi học nhiều video bài khác nhau không bị lẫn tiến độ
-    const PROGRESS_STORAGE_KEY = 'nls_saved_progress_' + (YOUTUBE_VIDEO_ID || LESSON_TITLE.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40) || 'local_lesson');
+    const PROGRESS_STORAGE_KEY = 'nls_saved_progress_v2_' + (YOUTUBE_VIDEO_ID || LESSON_TITLE.replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 40) || 'local_lesson');
     const LEGACY_PROGRESS_KEY = 'nls_toan6_saved_progress';
 
     let studentData = {
@@ -2197,20 +2218,6 @@
       },
       {
             "id": 3,
-            "time": 461,
-            "type": "mcq",
-            "question": "Trước khi phân tích từng điển cố cụ thể trong Bài tập 1 (bài biểu 'Kê minh thập sách'), bài giảng và phần Gợi ý SGK đã hướng dẫn cách thực hiện và yêu cầu trọng tâm nào sau đây?",
-            "options": [
-                  "A. Theo dõi hệ thống cước chú ở trang 95 (nhận diện điển cố dưới hình thức nhân danh, địa danh), xác định tiêu biểu từ 3 điển cố trở lên và nêu được hiệu quả của chúng",
-                  "B. Bắt buộc dịch toàn bộ 10 điều tâu từ nguyên văn chữ Hán sang thơ lục bát tiếng Việt mà không cần xem cước chú trang 95",
-                  "C. Chỉ tìm kiếm các từ láy miêu tả cảnh thiên nhiên hoang vu mà bỏ qua tên nhân vật hay địa danh lịch sử",
-                  "D. Lược bỏ hoàn toàn các câu văn biền ngẫu cổ để viết lại thành lời đối thoại tự do theo văn phong hiện đại"
-            ],
-            "correct": 0,
-            "explanation": "Chính xác! Bài giảng hướng dẫn các em bám sát cước chú ở SGK trang 95 để nhận diện điển cố (dưới hình thức nhân danh, địa danh), không cần liệt kê hết toàn bộ mà chỉ cần chỉ ra tiêu biểu từ 3 điển cố trở lên cùng hiệu quả nghệ thuật của chúng."
-      },
-      {
-            "id": 4,
             "time": 610,
             "type": "match",
             "question": "Em hãy chạm nối mỗi điển cố trong Bài tập 1 (Cột A) với đúng nguồn gốc và ý nghĩa tương ứng (Cột B):",
@@ -2234,7 +2241,7 @@
             "explanation": "Tuyệt vời! Cả ba điển cố trong 'Kê minh thập sách' (Hán thư, Kinh thi, Từ Huệ phi) đều khẳng định tài trí, tấm lòng trung trinh và nghệ thuật can gián khéo léo của cung phi Bích Châu."
       },
       {
-            "id": 5,
+            "id": 4,
             "time": 715,
             "type": "multi",
             "question": "Từ đoạn văn Bài tập 2 (Đoàn Thị Điểm, Đền thiêng cửa bể) vừa lắng nghe, em hãy tích chọn TẤT CẢ các nhóm điển cố xuất hiện trực tiếp trong đoạn văn đó:",
@@ -2252,7 +2259,7 @@
             "explanation": "Xuất sắc! Đoạn lời giãi bày của cung nhân Bích Châu sử dụng dày đặc các điển cố: bến Đố Phụ, Tiêm Đài, làm vợ họ Trương, làm tù nước Sở, hồn tinh vệ, phú Li tao (còn Hoa Quả Sơn, Thuỷ Liêm Động thuộc Bài tập 3 – Muối của rừng)."
       },
       {
-            "id": 6,
+            "id": 5,
             "time": 920,
             "type": "classify",
             "question": "Dựa vào phần cước chú trang 100 và phân tích của bài giảng về hình thức điển cố trong Bài tập 2, em hãy phân loại 6 điển cố sau vào đúng nhóm:",
@@ -2290,7 +2297,7 @@
             "explanation": "Chính xác! Các điển cố trong Bài tập 2 được biểu hiện rất phong phú: tên người (Liễu Thị, vợ họ Trương, Tào Nga), tên đất/địa danh (bến Đố Phụ, Tiêm Đài), tên sự kiện (làm tù nước Sở), tên tác phẩm (Li tao) và biểu tượng truyền thuyết (chim tinh vệ)."
       },
       {
-            "id": 7,
+            "id": 6,
             "time": 973,
             "type": "tf_group",
             "question": "Xét tính ĐÚNG hoặc SAI của từng nhận định sau về nội dung và tác dụng của việc sử dụng điển cố trong đoạn trích Bài tập 2 (Đền thiêng cửa bể):",
@@ -2319,7 +2326,7 @@
             "explanation": "Chuẩn xác! Các ý a), b), d) ĐÚNG theo nội dung bài giảng. Ý c) SAI vì việc dùng điển cố giúp lời nói của nhân vật thêm xác tín, tăng sức thuyết phục và khiến lời văn trau chuốt, mượt mà, giàu sức gợi."
       },
       {
-            "id": 8,
+            "id": 7,
             "time": 1061,
             "type": "tf",
             "question": "Nhận định sau ĐÚNG hay SAI: \"Hai địa danh 'Hoa Quả Sơn' và 'Thuỷ Liêm Động' trong đoạn trích 'Muối của rừng' (Nguyễn Huy Thiệp) KHÔNG phải là điển cố vì đây là tác phẩm văn học hiện đại.\"",
@@ -2327,7 +2334,7 @@
             "explanation": "Chính xác — nhận định trên là SAI! 'Hoa Quả Sơn' và 'Thuỷ Liêm Động' ĐÚNG là hai điển cố (dẫn từ tác phẩm Tây du kí của Ngô Thừa Ân). Điển cố không chỉ phổ biến ở văn học trung đại mà còn được các nhà văn hiện đại vận dụng rất sáng tạo."
       },
       {
-            "id": 9,
+            "id": 8,
             "time": 1135,
             "type": "drag",
             "question": "Trong truyện ngắn 'Muối của rừng' (Nguyễn Huy Thiệp), việc sử dụng hai điển cố 'Hoa Quả Sơn' và 'Thuỷ Liêm Động' mang lại tác dụng nào? Em hãy chạm chọn thẻ đúng:",
@@ -2342,7 +2349,7 @@
             "explanation": "Chính xác! Kết nối với Tây du kí (Hoa Quả Sơn – ngọn núi hoang vu hiểm trở; Thuỷ Liêm Động – hang động bí ẩn sâu thẳm), hai điển cố giúp người đọc hình dung ngay khung cảnh núi rừng hoang vu, hiểm trở có hàng bầy khỉ và thể hiện tâm trạng lo lắng của nhân vật ông Diểu."
       },
       {
-            "id": 10,
+            "id": 9,
             "time": 1241,
             "type": "multi",
             "question": "Theo phần Tóm lại cuối bài giảng, hãy tích chọn TẤT CẢ các lí do khiến điển cố đặc biệt phổ biến trong văn chương thời trung đại (dẫn tới lối sáng tác 'tập cổ', 'phỏng cổ'):",
@@ -2452,6 +2459,11 @@
           videoDuration = this.localEl.duration || videoDuration;
           renderCheckpoints();
           updateTimelineUI(0);
+        };
+        this.localEl.ontimeupdate = () => {
+          if (!isQuizCurrentlyOpen() && this.localEl && !this.localEl.paused) {
+            checkPlaybackProgress();
+          }
         };
         this.localEl.onplay = () => {
           if (isQuizCurrentlyOpen()) {
@@ -2851,48 +2863,53 @@
     }
 
     // --- 6. STRICT ANTI-SKIP MONITORING LOOP ---
+    function checkPlaybackProgress() {
+      // Nếu câu hỏi đang mở hiển thị, KHÔNG quét hoặc render lại để bảo vệ tuyệt đối dữ liệu học sinh đang nhập!
+      if (isQuizCurrentlyOpen()) {
+        return;
+      }
+
+      const currentTime = PlayerEngine.getTime();
+      videoDuration = PlayerEngine.getDuration() || videoDuration;
+
+      if (currentTime > maxWatchedTime + 1.5) {
+        if (isTeacherMode) {
+          maxWatchedTime = Math.max(maxWatchedTime, currentTime);
+        } else {
+          triggerAntiSkipLock();
+          return;
+        }
+      }
+
+      // Ở chế độ Học sinh: bắt mọi trạm chưa trả lời có cp.time <= currentTime + 0.3 (không giới hạn trần để chống hụt câu hỏi khi máy lag)
+      // Ở chế độ Thầy Cô: chỉ bắt trong cửa sổ nhỏ quanh mốc trạm để Thầy Cô tua kiểm duyệt tự do
+      const pendingCp = checkpoints.find(cp => {
+        if (studentData.attempts[cp.id]) return false;
+        if (isTeacherMode) {
+          return currentTime >= (cp.time - 0.5) && currentTime <= (cp.time + 1.5);
+        }
+        return currentTime >= (cp.time - 0.3);
+      });
+
+      if (pendingCp) {
+        pauseAndOpenQuiz(pendingCp);
+        return;
+      }
+
+      if (currentTime > maxWatchedTime) {
+        maxWatchedTime = currentTime;
+      }
+
+      updateTimelineUI(currentTime);
+      if (!window._lastSaveTick || Date.now() - window._lastSaveTick > 3000) {
+        window._lastSaveTick = Date.now();
+        saveStudentProgressLocally();
+      }
+    }
+
     function startMonitoring() {
       if (monitorInterval) clearInterval(monitorInterval);
-      monitorInterval = setInterval(() => {
-        // Nếu câu hỏi đang mở hiển thị, KHÔNG quét hoặc render lại để bảo vệ tuyệt đối dữ liệu học sinh đang nhập!
-        if (isQuizCurrentlyOpen()) {
-          return;
-        }
-
-        const currentTime = PlayerEngine.getTime();
-        videoDuration = PlayerEngine.getDuration() || videoDuration;
-
-        if (currentTime > maxWatchedTime + 1.5) {
-          if (isTeacherMode) {
-            maxWatchedTime = Math.max(maxWatchedTime, currentTime);
-          } else {
-            triggerAntiSkipLock();
-            return;
-          }
-        }
-
-        // Ở chế độ Học sinh: bắt mọi trạm chưa trả lời có cp.time <= currentTime + 0.3 (không giới hạn trần để chống hụt câu hỏi khi máy lag)
-        // Ở chế độ Thầy Cô: chỉ bắt trong cửa sổ nhỏ quanh mốc trạm để Thầy Cô tua kiểm duyệt tự do
-        const pendingCp = checkpoints.find(cp => {
-          if (studentData.attempts[cp.id]) return false;
-          if (isTeacherMode) {
-            return currentTime >= (cp.time - 0.5) && currentTime <= (cp.time + 1.5);
-          }
-          return currentTime >= (cp.time - 0.3);
-        });
-
-        if (pendingCp) {
-          pauseAndOpenQuiz(pendingCp);
-          return;
-        }
-
-        if (currentTime > maxWatchedTime) {
-          maxWatchedTime = currentTime;
-        }
-
-        updateTimelineUI(currentTime);
-        saveStudentProgressLocally();
-      }, 250);
+      monitorInterval = setInterval(checkPlaybackProgress, 200);
     }
 
     function triggerAntiSkipLock() {
@@ -3085,14 +3102,68 @@
       }
     });
 
+    function getFullscreenElementAny() {
+      return document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement || null;
+    }
+
+    function exitAnyFullscreen(onSettled) {
+      const container = document.getElementById('playerContainer');
+      if (container) container.classList.remove('pseudo-fullscreen');
+      try {
+        const fsEl = getFullscreenElementAny();
+        const v = document.getElementById('localVideo');
+        if (v && v.webkitDisplayingFullscreen && typeof v.webkitExitFullscreen === 'function') {
+          v.webkitExitFullscreen();
+        }
+        if (fsEl) {
+          const exitFn = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+          if (typeof exitFn === 'function') {
+            Promise.resolve(exitFn.call(document)).catch(() => {}).finally(() => {
+              if (typeof onSettled === 'function') onSettled();
+            });
+            return;
+          }
+        }
+      } catch (e) {}
+      if (typeof onSettled === 'function') onSettled();
+    }
+
+    function mountQuizOverlayVisible() {
+      const overlay = document.getElementById('quizOverlay');
+      if (!overlay) return;
+      const fsEl = getFullscreenElementAny();
+      const targetHost = fsEl || document.body;
+      if (targetHost && overlay.parentNode !== targetHost) {
+        targetHost.appendChild(overlay);
+      }
+    }
+
+    function handleFullscreenChanged() {
+      if (isQuizCurrentlyOpen()) {
+        mountQuizOverlayVisible();
+      }
+    }
+    document.addEventListener('fullscreenchange', handleFullscreenChanged);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChanged);
+
     function toggleFullscreen() {
       const container = document.getElementById('playerContainer');
-      if (!document.fullscreenElement) {
-        if (container.requestFullscreen) {
-          container.requestFullscreen().catch(() => {});
+      const fsEl = getFullscreenElementAny();
+      if (!fsEl && !container.classList.contains('pseudo-fullscreen')) {
+        const reqFn = container.requestFullscreen || container.webkitRequestFullscreen || container.mozRequestFullScreen || container.msRequestFullscreen;
+        if (typeof reqFn === 'function') {
+          try {
+            Promise.resolve(reqFn.call(container)).catch(() => {
+              container.classList.add('pseudo-fullscreen');
+            });
+          } catch (e) {
+            container.classList.add('pseudo-fullscreen');
+          }
+        } else {
+          container.classList.add('pseudo-fullscreen');
         }
       } else {
-        if (document.exitFullscreen) document.exitFullscreen();
+        exitAnyFullscreen();
       }
     }
 
@@ -3224,6 +3295,12 @@
       currentClozeState = { values: [], bankIndices: [], activeBlank: 0, shuffledBankOrder: [] };
       currentClassifyState = { itemOrder: [], activeItem: null, assignments: {} };
       clearQuizTimers();
+
+      // Thoát toàn màn hình ngay trên điện thoại / máy tính để câu hỏi luôn bật lên rõ ràng trên viewport
+      exitAnyFullscreen(() => {
+        if (isQuizCurrentlyOpen()) mountQuizOverlayVisible();
+      });
+      mountQuizOverlayVisible();
 
       // Tạm dừng video ngay; chỉ seek lại nếu lệch quá 2 giây để tránh YouTube tự buffer & play lại
       PlayerEngine.pause();
@@ -3376,7 +3453,9 @@
 
       renderMathInContainer(qText);
       renderMathInContainer(cArea);
+      mountQuizOverlayVisible();
       overlay.classList.add('active');
+      if (scrollBody) scrollBody.scrollTop = 0;
     }
 
     function ensureQuestionStat(cpId) {
@@ -4955,6 +5034,7 @@
     }
 
     function showCompletionScreen() {
+      exitAnyFullscreen();
       recalculateScore();
       const totalQ = checkpoints.length;
       const pct = totalQ > 0 ? Math.round((studentData.score / totalQ) * 100) : 100;
